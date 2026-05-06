@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Indoor — TU Navigator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #111214;
+      --surface:  #18191d;
+      --surface2: #1f2025;
+      --surface3: #26272e;
+      --border:   rgba(255,255,255,.07);
+      --border2:  rgba(255,255,255,.12);
+      --text:     #e8e9ec;
+      --text2:    #9a9ca5;
+      --text3:    #5a5c66;
+      --red:      #e03e2a;
+      --red-dim:  rgba(224,62,42,.12);
+      --ease:     cubic-bezier(.22,1,.36,1);
+      --panel-w:  280px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg); color: var(--text);
+      height: 100dvh; display: flex; flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      min-height: 54px;
+      display: flex; align-items: center; gap: 8px;
+      padding: 0 16px;
+      padding-top: max(env(safe-area-inset-top), 0px);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0; z-index: 30;
+    }
+
+    .tb-btn {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 12px; border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent; color: var(--text2);
+      font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
+      text-decoration: none; cursor: pointer;
+      transition: background .12s, color .12s, border-color .12s;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .tb-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
+
+    .tb-sep { width: 1px; height: 18px; background: var(--border); flex-shrink: 0; }
+
+    .tb-info { flex: 1; min-width: 0; overflow: hidden; }
+    .tb-tag {
+      font-size: 10px; font-weight: 600; letter-spacing: .07em;
+      text-transform: uppercase; color: var(--red);
+      background: rgba(224,62,42,.1);
+      padding: 2px 6px; border-radius: 4px;
+      display: inline-block;
+    }
+    .tb-name {
+      font-size: 13px; font-weight: 600; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-top: 1px;
+      max-width: 100%;
+    }
+
+    .tb-right { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+    .floor-label { font-size: 12px; color: var(--text3); }
+
+    .floor-sel {
+      appearance: none;
+      padding: 6px 26px 6px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,.3)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 7px center;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
+      cursor: pointer; outline: none;
+      transition: border-color .12s;
+    }
+    .floor-sel:hover { border-color: var(--border2); }
+    .floor-sel option { background: #1f2025; }
+
+    /* ── CONTENT ── */
+    .content {
+      flex: 1; display: flex; overflow: hidden; min-height: 0;
+    }
+
+    /* ── SCENE PANEL (left) ── */
+    .scene-panel {
+      width: var(--panel-w);
+      min-width: var(--panel-w);
+      display: flex; flex-direction: column;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow: hidden;
+      transition: width .28s var(--ease), min-width .28s var(--ease);
+    }
+
+    .sp-head {
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .sp-head-title {
+      font-size: 13px; font-weight: 600; color: var(--text);
+      margin-bottom: 2px;
+    }
+    .sp-head-sub {
+      font-size: 11px; color: var(--text3); font-weight: 400;
+    }
+
+    .sp-list {
+      flex: 1; overflow-y: auto; padding: 8px;
+    }
+    .sp-list::-webkit-scrollbar { width: 3px; }
+    .sp-list::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+
+    .sc-btn {
+      width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; padding: 9px 10px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text2);
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer; margin-bottom: 2px;
+      text-align: left;
+      transition: background .12s, border-color .12s, color .12s;
+    }
+    .sc-btn:hover { background: var(--surface2); color: var(--text); }
+    .sc-btn.active {
+      background: var(--red-dim);
+      border-color: rgba(224,62,42,.22);
+      color: var(--text);
+    }
+    .sc-btn-name { font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .sc-btn-id {
+      font-size: 10px; color: var(--text3); font-weight: 400;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .sc-btn.active .sc-btn-id { color: rgba(224,62,42,.5); }
+
+    /* ── VIEW AREA ── */
+    .view-area {
+      flex: 1; position: relative; overflow: hidden; background: #080808;
+    }
+
+    .view-img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      user-select: none; -webkit-user-drag: none;
+      transition: opacity .22s var(--ease);
+    }
+
+    .view-vignette {
+      position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.6) 100%);
+    }
+
+    /* HUD */
+    .hud {
+      position: absolute;
+      bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(17,18,20,.82);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 7px 16px;
+      display: flex; align-items: center; gap: 9px;
+      white-space: nowrap; pointer-events: none;
+      z-index: 15;
+    }
+    .hud-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+    .hud-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .hud-id { font-size: 11px; color: var(--text3); }
+
+    /* Keyboard hint */
+    .kbd-hint {
+      position: absolute; top: 14px; right: 14px;
+      display: flex; align-items: center; gap: 4px;
+      pointer-events: none; opacity: .3;
+    }
+    .k {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-bottom: 2px solid var(--border2);
+      border-radius: 5px;
+      padding: 2px 6px;
+      font-size: 10px; font-weight: 600; color: var(--text2);
+    }
+    .k-sep { font-size: 10px; color: var(--text3); }
+
+    /* Loading */
+    .view-loading {
+      position: absolute; inset: 0; z-index: 25;
+      display: grid; place-items: center;
+      background: rgba(8,8,10,.8);
+      backdrop-filter: blur(4px);
+      transition: opacity .2s, visibility .2s;
+    }
+    .view-loading.done { opacity: 0; visibility: hidden; }
+    .spinner {
+      width: 26px; height: 26px;
+      border: 2px solid var(--surface3);
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin .55s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── ARROWS ── */
+    .arrow {
+      position: absolute; z-index: 20;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      transition: opacity .2s;
+    }
+    .arrow.hidden { opacity: 0; pointer-events: none; }
+
+    .arrow-ring {
+      width: clamp(44px, 6vw, 54px);
+      height: clamp(44px, 6vw, 54px);
+      border-radius: 50%;
+      background: rgba(17,18,20,.72);
+      backdrop-filter: blur(10px);
+      border: 1.5px solid rgba(255,255,255,.16);
+      display: grid; place-items: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,.4);
+      transition: background .14s, border-color .14s, transform .15s var(--ease);
+    }
+    .arrow:hover .arrow-ring {
+      background: rgba(224,62,42,.22);
+      border-color: rgba(224,62,42,.45);
+      transform: scale(1.1);
+    }
+    .arrow:active .arrow-ring { transform: scale(.92); }
+
+    .arrow-label {
+      position: absolute;
+      background: rgba(0,0,0,.65); backdrop-filter: blur(6px);
+      color: rgba(255,255,255,.6);
+      font-size: 9px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+      padding: 2px 7px; border-radius: 4px; white-space: nowrap;
+      pointer-events: none; opacity: 0; transition: opacity .12s;
+    }
+    .arrow:hover .arrow-label { opacity: 1; }
+
+    .arrow.up    { left: 50%; top: 24%; }
+    .arrow.down  { left: 50%; top: 76%; }
+    .arrow.left  { left: 18%; top: 50%; }
+    .arrow.right { left: 82%; top: 50%; }
+
+    .arrow.up    .arrow-label { top: calc(100% + 7px); left: 50%; transform: translateX(-50%); }
+    .arrow.down  .arrow-label { bottom: calc(100% + 7px); left: 50%; transform: translateX(-50%); }
+    .arrow.left  .arrow-label { right: calc(100% + 7px); top: 50%; transform: translateY(-50%); }
+    .arrow.right .arrow-label { left: calc(100% + 7px); top: 50%; transform: translateY(-50%); }
+
+    /* ── PANEL COLLAPSE BUTTON ── */
+    .panel-collapse-btn {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1000;
+      width: 18px; height: 52px;
+      border-radius: 0 8px 8px 0;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-left: none;
+      color: var(--text2);
+      display: grid; place-items: center;
+      cursor: pointer;
+      box-shadow: 3px 0 14px rgba(0,0,0,.4);
+      transition: background .15s, color .15s, box-shadow .15s;
+    }
+    .panel-collapse-btn:hover {
+      background: var(--surface3);
+      color: var(--text);
+      box-shadow: 5px 0 18px rgba(0,0,0,.5);
+    }
+    .panel-collapse-icon {
+      transition: transform .32s var(--ease);
+    }
+    .panel-collapse-btn.is-collapsed .panel-collapse-icon {
+      transform: rotate(180deg);
+    }
+
+    .scene-panel.collapsed {
+      width: 0;
+      min-width: 0;
+    }
+
+    /* ── MOBILE ── */
+    @media (max-width: 720px) {
+      .panel-collapse-btn { display: none; }
+      .content { flex-direction: column-reverse; }
+      .scene-panel {
+        width: 100% !important; min-width: 100% !important;
+        flex-shrink: 0;
+        border-right: none;
+        border-top: 1px solid var(--border);
+        transition: height .32s var(--ease);
+        overflow: hidden;
+      }
+
+      /* view-area fills ALL remaining height */
+      .view-area {
+        flex: 1;
+        min-height: 0;
+        position: relative;
+      }
+      .view-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .kbd-hint { display: none; }
+      .arrow.left  { left: 10%; }
+      .arrow.right { left: 90%; }
+      .hud { bottom: 12px; font-size: 12px; }
+
+      /* Mobile panel toggle button */
+      .mobile-panel-toggle {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        height: 48px;
+        padding: 0 16px;
+        background: var(--surface);
+        border: none;
+        border-bottom: 1px solid var(--border);
+        color: var(--text2);
+        font-family: 'Outfit', sans-serif;
+        font-size: 12px; font-weight: 600;
+        cursor: pointer;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        transition: background .12s, color .12s;
+      }
+      .mobile-panel-toggle:hover { background: var(--surface2); color: var(--text); }
+      .mobile-panel-toggle-icon {
+        transition: transform .32s var(--ease);
+        flex-shrink: 0;
+      }
+      .scene-panel.mobile-collapsed .mobile-panel-toggle-icon {
+        transform: rotate(180deg);
+      }
+      .scene-panel.mobile-collapsed .sp-list,
+      .scene-panel.mobile-collapsed .sp-head {
+        visibility: hidden;
+        pointer-events: none;
+      }
+      /* Hide the duplicate building name and subtitle */
+      .scene-panel .sp-head {
+        display: none;
+      }
+
+      /* Ensure the list fills the space nicely */
+      .sp-list {
+        padding-top: 10px;
+      }
+
+      /* Hide the topbar separator on mobile */
+      .topbar .tb-sep { 
+        display: none; 
+      }
+    }
+    @media (min-width: 721px) {
+      .mobile-panel-toggle { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <!-- ONLY ENTRANCE BUTTON REMAINS -->
+    <a class="tb-btn" id="toEntrance" href="#">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      <span class="tb-btn-label">Back</span>
+    </a>
+    <div class="tb-sep"></div>
+    <div class="tb-info">
+      <span class="tb-tag">Indoor</span>
+      <div class="tb-name" id="tbName">—</div>
+    </div>
+    <div class="tb-right">
+      <span class="floor-label">Lantai</span>
+      <select class="floor-sel" id="floorSel"></select>
+    </div>
+  </header>
+
+  <div class="content">
+    <!-- Scene list panel -->
+    <aside class="scene-panel" id="scenePanel">
+      <button class="mobile-panel-toggle" id="mobilePanelToggle">
+        <span id="mobilePanelLabel">Daftar Lokasi</span>
+        <svg class="mobile-panel-toggle-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+      </button>
+      <div class="sp-head">
+        <div class="sp-head-title" id="spTitle">Daftar Lokasi</div>
+        <div class="sp-head-sub">Klik untuk navigasi langsung</div>
+      </div>
+      <div class="sp-list" id="spList"></div>
+    </aside>
+
+    <button class="panel-collapse-btn" id="panelCollapseBtn" title="Toggle panel">
+      <svg class="panel-collapse-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+
+    <main class="view-area">
+      <div class="view-loading" id="viewLoading"><div class="spinner"></div></div>
+      <img class="view-img" id="viewImg" alt="Scene"/>
+      <div class="view-vignette"></div>
+
+      <div class="hud" id="hud">
+        <div class="hud-dot"></div>
+        <span class="hud-name" id="hudName">—</span>
+        <span class="hud-id" id="hudId"></span>
+      </div>
+
+      <div class="kbd-hint">
+        <div class="k">W</div><div class="k">A</div>
+        <div class="k">S</div><div class="k">D</div>
+        <span class="k-sep">navigate</span>
+      </div>
+
+      <!-- Arrows -->
+      <div class="arrow up hidden" id="aUp">
+        <div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+        <div class="arrow-label" id="lUp">Atas</div>
+      </div>
+      <div class="arrow down hidden" id="aDown">
+        <div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
+        <div class="arrow-label" id="lDown">Bawah</div>
+      </div>
+      <div class="arrow left hidden" id="aLeft">
+        <div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
+        <div class="arrow-label" id="lLeft">Kiri</div>
+      </div>
+      <div class="arrow right hidden" id="aRight">
+        <div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 19l7-7-7-7"/></svg></div>
+        <div class="arrow-label" id="lRight">Kanan</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const p  = k => new URL(location.href).searchParams.get(k);
+    const sp = (k, v) => {
+      const u = new URL(location.href);
+      if (!v) u.searchParams.delete(k); else u.searchParams.set(k, v);
+      history.replaceState({}, "", u);
+    };
+
+    const scenePanel      = document.getElementById("scenePanel");
+    const panelCollapseBtn = document.getElementById("panelCollapseBtn");
+    let isPanelCollapsed  = false;
+    let rafId = null;
+
+    function syncBtnPos() {
+      const r = scenePanel.getBoundingClientRect();
+      panelCollapseBtn.style.left = r.right + "px";
+    }
+
+    function animateBtnPos(duration = 300) {
+      const start = performance.now();
+      function frame(now) {
+        syncBtnPos();
+        if (now - start < duration) rafId = requestAnimationFrame(frame);
+        else syncBtnPos();
+      }
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(frame);
+    }
+
+    panelCollapseBtn.addEventListener("click", () => {
+      isPanelCollapsed = !isPanelCollapsed;
+      scenePanel.classList.toggle("collapsed", isPanelCollapsed);
+      panelCollapseBtn.classList.toggle("is-collapsed", isPanelCollapsed);
+      animateBtnPos();
+    });
+
+    const COLLAPSED_H = 48;
+    let isMobilePanelCollapsed = false; // Panel starts Expanded
+    let expandedPanelH = 0;
+
+    function initPanelHeight() {
+      if (window.innerWidth > 720) {
+        scenePanel.style.height = "";
+        return;
+      }
+      // Force Expanded state
+      scenePanel.classList.remove("mobile-collapsed");
+      isMobilePanelCollapsed = false;
+      
+      scenePanel.style.height = "auto";
+      expandedPanelH = Math.min(scenePanel.scrollHeight, Math.round(window.innerHeight * 0.42));
+      scenePanel.style.height = expandedPanelH + "px";
+    }
+
+    mobilePanelToggle.addEventListener("click", () => {
+      isMobilePanelCollapsed = !isMobilePanelCollapsed;
+      if (isMobilePanelCollapsed) {
+        scenePanel.classList.add("mobile-collapsed");
+        scenePanel.style.height = COLLAPSED_H + "px";
+      } else {
+        // Measure natural height while panel is invisible to avoid the flash-to-full-height flicker
+        scenePanel.style.visibility = "hidden";
+        scenePanel.style.height = "auto";
+        const naturalH = Math.min(scenePanel.scrollHeight, Math.round(window.innerHeight * 0.42));
+        scenePanel.style.height = COLLAPSED_H + "px";
+        scenePanel.style.visibility = "";
+        // Force reflow so browser registers the start value before animating
+        scenePanel.getBoundingClientRect();
+        scenePanel.classList.remove("mobile-collapsed");
+        scenePanel.style.height = naturalH + "px";
+        expandedPanelH = naturalH;
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      initPanelHeight();
+      if (window.innerWidth > 720) {
+        syncBtnPos();
+        if (isMobilePanelCollapsed) {
+          isMobilePanelCollapsed = false;
+          scenePanel.classList.remove("mobile-collapsed");
+        }
+      }
+    });
+
+    requestAnimationFrame(() => requestAnimationFrame(syncBtnPos));
+
+    async function run() {
+      const id     = p("id");
+      const floorQ = Number(p("floor") || 1);
+
+      let data;
+      try {
+        const res = await fetch("./campus.json");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        data = await res.json();
+      } catch (e) {
+        console.error("Failed to load campus.json:", e);
+        alert("Gagal memuat data gedung.");
+        location.href = "./index.html";
+        return;
+      }
+
+      const b = data.buildings.find(x => x.id === id);
+      if (!b) { location.href = "./index.html"; return; }
+
+      document.getElementById("tbName").textContent = b.name;
+      document.getElementById("spTitle").textContent = b.name;
+      document.getElementById("mobilePanelLabel").textContent = b.name;
+      document.getElementById("toEntrance").href = `./entrance.html?id=${encodeURIComponent(b.id)}`;
+
+      const floorSel = document.getElementById("floorSel");
+      floorSel.innerHTML = b.floors.map(f =>
+        `<option value="${f.floor}">${f.name || "Lantai " + f.floor}</option>`
+      ).join("");
+      floorSel.value = String(floorQ);
+
+      const viewImg     = document.getElementById("viewImg");
+      const viewLoading = document.getElementById("viewLoading");
+      const spList      = document.getElementById("spList");
+      const hudName     = document.getElementById("hudName");
+      const hudId       = document.getElementById("hudId");
+
+      const aUp = document.getElementById("aUp"), lUp = document.getElementById("lUp");
+      const aDown = document.getElementById("aDown"), lDown = document.getElementById("lDown");
+      const aLeft = document.getElementById("aLeft"), lLeft = document.getElementById("lLeft");
+      const aRight = document.getElementById("aRight"), lRight = document.getElementById("lRight");
+
+      const getFloor = n => b.floors.find(x => x.floor === Number(n));
+      let currentScene = "";
+
+      function applyArrow(btn, lbl, targetId, name, goFn) {
+        if (!targetId) { btn.classList.add("hidden"); btn.onclick = null; return; }
+        btn.classList.remove("hidden");
+        lbl.textContent = name || targetId;
+        btn.onclick = () => goFn(targetId);
+      }
+
+      function setActive(sid) {
+        spList.querySelectorAll(".sc-btn").forEach(b => b.classList.toggle("active", b.dataset.sid === sid));
+        if (isMobilePanelCollapsed) return;
+        const active = spList.querySelector(`.sc-btn[data-sid="${sid}"]`);
+        active?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+
+      function buildSceneList(scenes, goFn) {
+        spList.innerHTML = "";
+        const entries = Object.entries(scenes || {});
+        entries.sort((a, b) => {
+          if (a[0] === "entrance") return -1;
+          if (b[0] === "entrance") return 1;
+          return (a[1].name || a[0]).localeCompare(b[1].name || b[0]);
+        });
+        for (const [sid, s] of entries) {
+          const btn = document.createElement("button");
+          btn.className = "sc-btn";
+          btn.dataset.sid = sid;
+          btn.innerHTML = `<span class="sc-btn-name">${s.name || sid}</span><span class="sc-btn-id">${sid}</span>`;
+          btn.onclick = () => goFn(sid);
+          spList.appendChild(btn);
+        }
+      }
+
+      function loadFloor(floorNum) {
+        const f = getFloor(floorNum);
+        if (!f) return;
+        const scenes     = f.scenes || null;
+        const startScene = f.startScene || "entrance";
+        const sceneQ     = p("scene") || startScene;
+
+        function goScene(sid) {
+          const s = scenes[sid];
+          if (!s) return;
+          currentScene = sid;
+          sp("scene", sid);
+          setActive(sid);
+          hudName.textContent = s.name || sid;
+          hudId.textContent   = sid;
+          viewImg.style.opacity = "0";
+          viewLoading.classList.remove("done");
+          const ni = new Image();
+          ni.onload = () => {
+            viewImg.src = ni.src;
+            viewImg.style.opacity = "1";
+            viewLoading.classList.add("done");
+          };
+          ni.onerror = () => {
+            viewImg.style.opacity = "1";
+            viewLoading.classList.add("done");
+          };
+          ni.src = s.img;
+          applyArrow(aUp,    lUp,    s.up,    scenes[s.up]?.name,    goScene);
+          applyArrow(aDown,  lDown,  s.down,  scenes[s.down]?.name,  goScene);
+          applyArrow(aLeft,  lLeft,  s.left,  scenes[s.left]?.name,  goScene);
+          applyArrow(aRight, lRight, s.right, scenes[s.right]?.name, goScene);
+        }
+
+        buildSceneList(scenes, goScene);
+        goScene(sceneQ);
+        requestAnimationFrame(() => initPanelHeight());
+
+        if (loadFloor._keyHandler) window.removeEventListener("keydown", loadFloor._keyHandler);
+        loadFloor._keyHandler = e => {
+          const s = scenes[currentScene]; if (!s) return;
+          const k = e.key.toLowerCase();
+          if (k === "arrowup"    || k === "w") { e.preventDefault(); if (s.up)    goScene(s.up); }
+          if (k === "arrowdown"  || k === "s") { e.preventDefault(); if (s.down)  goScene(s.down); }
+          if (k === "arrowleft"  || k === "a") { e.preventDefault(); if (s.left)  goScene(s.left); }
+          if (k === "arrowright" || k === "d") { e.preventDefault(); if (s.right) goScene(s.right); }
+        };
+        window.addEventListener("keydown", loadFloor._keyHandler);
+      }
+
+      floorSel.onchange = () => {
+        sp("floor", floorSel.value);
+        sp("scene", "");
+        loadFloor(floorSel.value);
+      };
+      loadFloor(floorQ);
+    }
+    run();
+  </script>
+</body>
+</html>
