@@ -219,12 +219,23 @@
   <!-- SCENE -->
   <div class="scene">
     <div class="loading" id="loading"><div class="spinner"></div></div>
+    <div id="errorState" style="display:none; position:absolute; inset:0; z-index:10; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:32px; background:var(--bg); text-align:center;">
+      <div style="width:48px;height:48px;border-radius:50%;background:rgba(224,62,42,.12);display:grid;place-items:center;color:var(--red);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      </div>
+      <div style="font-size:16px;font-weight:700;color:var(--text);">Gagal Memuat Data</div>
+      <div id="errMsg" style="font-size:13px;color:var(--text2);max-width:280px;line-height:1.5;"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:4px;">
+        <button onclick="location.href='./index.html'" style="padding:9px 18px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:var(--surface2);color:var(--text);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">← Kembali ke Peta</button>
+        <button onclick="location.reload()" style="padding:9px 18px;border-radius:8px;border:1px solid var(--red);background:var(--red);color:#fff;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">Coba Lagi</button>
+      </div>
+    </div>
     <img class="scene-img" id="sceneImg" alt="Entrance view"/>
     <div class="scene-vignette"></div>
     <div class="scene-grad"></div>
 
     <!-- Arrows -->
-    <div class="arrow up" id="aUp">
+    <div class="arrow up" id="aUp" role="button" tabindex="0" aria-label="Enter building">
       <div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
       <div class="arrow-tip">Masuk</div>
     </div>
@@ -232,18 +243,25 @@
 
   <!-- ACTIONS -->
   <div class="actions">
-    <button class="act-btn" id="btnDir">
+    <button class="act-btn" id="btnDir" aria-label="Open in Google Maps">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
       Google Maps
     </button>
-    <button class="act-btn primary" id="btnEnter">
+    <button class="act-btn primary" id="btnEnter" aria-label="Enter building">
       Masuk Gedung
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </button>
   </div>
 
-  <script>
+    <script>
     const p = k => new URL(location.href).searchParams.get(k);
+
+    function showError(msg) {
+      document.getElementById("loading").classList.add("done");
+      const el = document.getElementById("errorState");
+      document.getElementById("errMsg").textContent = msg;
+      el.style.display = "flex";
+    }
 
     async function run() {
       const id = p("id");
@@ -256,13 +274,15 @@
         data = await res.json();
       } catch (e) {
         console.error("Failed to load campus.json:", e);
-        alert("Gagal memuat data gedung. Coba muat ulang halaman.");
-        location.href = "./index.html";
+        showError("Tidak dapat memuat campus.json. Periksa koneksi Anda, lalu coba lagi.");
         return;
       }
 
       const b = data.buildings.find(x => x.id === id);
-      if (!b)  { alert("Gedung tidak ditemukan"); location.href = "./index.html"; return; }
+      if (!b) {
+        showError(`Gedung dengan ID "${id}" tidak ditemukan dalam data.`);
+        return;
+      }
 
       document.getElementById("bldName").textContent = b.name;
 
