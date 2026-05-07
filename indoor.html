@@ -227,6 +227,8 @@
       transform: translate(-50%, -50%);
       cursor: pointer;
       transition: opacity .2s;
+      background: none; border: none; padding: 0;
+      font-family: inherit;
     }
     .arrow.hidden { opacity: 0; pointer-events: none; }
 
@@ -442,22 +444,22 @@
       </div>
 
       <!-- Arrows -->
-      <div class="arrow up hidden" id="aUp" role="button" tabindex="0" aria-label="Go forward (up)">
+      <button class="arrow up hidden" id="aUp" aria-label="Go forward (up)">
         <div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
         <div class="arrow-label" id="lUp">Atas</div>
-      </div>
-      <div class="arrow down hidden" id="aDown" role="button" tabindex="0" aria-label="Go back (down)">
+      </button>
+      <button class="arrow down hidden" id="aDown" aria-label="Go back (down)">
         <div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
         <div class="arrow-label" id="lDown">Bawah</div>
-      </div>
-      <div class="arrow left hidden" id="aLeft" role="button" tabindex="0" aria-label="Go left">
+      </button>
+      <button class="arrow left hidden" id="aLeft" aria-label="Go left">
         <div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div>
         <div class="arrow-label" id="lLeft">Kiri</div>
-      </div>
-      <div class="arrow right hidden" id="aRight" role="button" tabindex="0" aria-label="Go right">
+      </button>
+      <button class="arrow right hidden" id="aRight" aria-label="Go right">
         <div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 19l7-7-7-7"/></svg></div>
         <div class="arrow-label" id="lRight">Kanan</div>
-      </div>
+      </button>
     </main>
   </div>
 
