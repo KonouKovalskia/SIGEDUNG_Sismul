@@ -12,10 +12,12 @@ export async function fetchCampusData() {
   return await res.json();
 }
 
-// Unified error state injector
 export function injectErrorState(container, msg, backUrl = "./index.html") {
-  container.innerHTML = `
-    <div class="error-state visible">
+  let el = container.querySelector(".error-state");
+  if (!el) {
+    el = document.createElement("div");
+    el.className = "error-state visible";
+    el.innerHTML = `
       <div class="error-icon">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
       </div>
@@ -24,6 +26,10 @@ export function injectErrorState(container, msg, backUrl = "./index.html") {
       <div class="error-actions">
         <button class="error-btn" onclick="location.href='${backUrl}'">← Kembali</button>
         <button class="error-btn primary" onclick="location.reload()">Coba Lagi</button>
-      </div>
-    </div>`;
+      </div>`;
+    container.appendChild(el);
+  } else {
+    el.querySelector(".error-msg").textContent = msg;
+    el.classList.add("visible");
+  }
 }
