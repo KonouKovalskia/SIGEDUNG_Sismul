@@ -586,7 +586,7 @@
   </aside>
 
   <!-- ── COLLAPSE BUTTON — outside sidebar so overflow:hidden doesn't clip it ── -->
-  <button class="collapse-btn" id="collapseBtn" title="Collapse sidebar">
+  <button class="collapse-btn" id="collapseBtn" title="Collapse sidebar" aria-label="Collapse sidebar">
     <svg class="collapse-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
   </button>
 
@@ -696,15 +696,22 @@
   async function init() {
     let data;
     try {
-      const res = await fetch("./campus.json");
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      data = await res.json();
-    } catch (e) {
-      console.error("Failed to load campus.json:", e);
-      document.getElementById("bldList").innerHTML =
-        `<div class="sb-empty">Gagal memuat data gedung.<br>Coba muat ulang halaman.</div>`;
-      return;
-    }
+        const res = await fetch("./campus.json");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        data = await res.json();
+      } catch (e) {
+        console.error("Failed to load campus.json:", e);
+        document.getElementById("bldList").innerHTML = `
+          <div style="padding:24px 16px; text-align:center;">
+            <div style="width:44px;height:44px;border-radius:50%;background:rgba(224,62,42,.12);display:grid;place-items:center;color:#e03e2a;margin:0 auto 12px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            </div>
+            <div style="font-size:14px;font-weight:700;color:#e8e9ec;margin-bottom:6px;">Gagal Memuat Data</div>
+            <div style="font-size:12px;color:#9a9ca5;margin-bottom:16px;line-height:1.5;">Tidak dapat memuat campus.json.<br>Periksa koneksi Anda.</div>
+            <button onclick="location.reload()" style="padding:8px 18px;border-radius:8px;border:1px solid #e03e2a;background:#e03e2a;color:#fff;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;width:100%;">Coba Lagi</button>
+          </div>`;
+        return;
+      }
     const first = data.buildings[0];
     const clat  = first?.location?.lat ?? -6.9734;
     const clng  = first?.location?.lng ?? 107.6321;
