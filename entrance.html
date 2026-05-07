@@ -4,9 +4,10 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Entrance — TU Navigator</title>
-  <link rel="stylesheet" href="./styles/tokens.css">
-  <link rel="stylesheet" href="./styles/components.css">
-  <link rel="stylesheet" href="./styles/entrance.css">
+
+  <link rel="stylesheet" href="./styles/tokens.css"/>
+  <link rel="stylesheet" href="./styles/components.css"/>
+  <link rel="stylesheet" href="./styles/entrance.css"/>
 </head>
 <body>
   <header class="topbar">
@@ -15,31 +16,32 @@
       Back
     </a>
     <div class="tb-sep"></div>
-    <div style="flex: 1; display:flex; gap:6px; align-items:center;">
-      <span style="font-size:10px; font-weight:600; color:var(--red); background:rgba(224,62,42,.1); padding:3px 7px; border-radius:5px;">Entrance</span>
-      <span style="font-size:14px; font-weight:600;" id="bldName">—</span>
+    <div class="tb-crumb">
+      <span class="tb-crumb-tag">Entrance</span>
+      <span class="tb-crumb-name" id="bldName">—</span>
     </div>
   </header>
 
   <div class="scene" id="sceneContainer">
     <div class="loading-overlay" id="loading"><div class="spinner"></div></div>
-    
     <img class="scene-img" id="sceneImg" alt="Entrance view"/>
     <div class="scene-vignette"></div>
     <div class="scene-grad"></div>
 
     <button class="arrow up hidden" id="aUp" aria-label="Enter building">
       <div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
-      <div class="arrow-label" style="top:calc(100% + 7px); left:50%; transform:translateX(-50%);">Masuk</div>
+      <div class="arrow-label">Masuk</div>
     </button>
   </div>
 
   <div class="actions">
     <button class="act-btn" id="btnDir">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg> Google Maps
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+      Google Maps
     </button>
     <button class="act-btn primary" id="btnEnter">
-      Masuk Gedung <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Masuk Gedung
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </button>
   </div>
 
