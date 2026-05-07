@@ -1,0 +1,50 @@
+{
+  "campus": {
+    "name": "Telkom University",
+    "myMapsEmbedUrl": "assets/starting/startingpiv.png"
+  },
+  "buildings":[
+    {
+      "id": "cacuk",
+      "name": "Gedung Cacuk",
+      "thumbnail": "assets/thumb/cacuk.jpg",
+      "location": { "lat": -6.9744188, "lng": 107.631094 },
+      "entrance": {
+        "lat": -6.9734,
+        "lng": 107.63205,
+        "image": "assets/entrance/cacuk-entrance.jpg"
+      },
+      "floors":[
+        {
+          "floor": 1,
+          "name": "Lantai 1",
+          "image": "assets/floorplan/cacuk-floor1.png",
+          "imageSize": { "width": 1920, "height": 1080 },
+          "startScene": "entrance",
+          "scenes": {
+            "entrance": {
+              "name": "Entrance",
+              "img": "assets/floorplan/TengahL1.jpg",
+              "left": "west",
+              "right": "east"
+            },
+            "west": { "img": "assets/floorplan/LeftL1.jpg", "down": "entrance", "up": "B-102" },
+            "B-102": { "img": "assets/floorplan/B-102.jpg", "down": "west", "right": "B-102-Koridor1" },
+            "B-102-Koridor1": { "img": "assets/floorplan/B-102-Koridor1.jpg", "down": "B-102", "up": "KU2-01-02" },
+            "KU2-01-02": { "img": "assets/floorplan/KU2-01-02.jpg", "left": "B-102-Koridor1", "right": "KU2-01-01" },
+            "KU2-01-01": { "img": "assets/floorplan/KU2-01-01.jpg", "left": "KU2-01-02", "right": "Toilet1-L1" },
+            "Toilet1-L1": { "img": "assets/floorplan/Toilet1-L1.jpg", "left": "KU2-01-01" },
+            "east": { "img": "assets/floorplan/RightL1.jpg", "left": "entrance", "up": "KoridorL1" },
+            "KoridorL1": { "img": "assets/floorplan/KoridorL1.jpg", "down": "east", "up": "B-103-A" },
+            "B-103-A": { "img": "assets/floorplan/B-103-A.jpg", "right": "KoridorL1", "left": "B-103-A-Koridor" },
+            "B-103-A-Koridor": { "img": "assets/floorplan/B-103-A-Koridor.jpg", "down": "B-103-A", "up": "B-103-A-Koridor2" },
+            "B-103-A-Koridor2": { "img": "assets/floorplan/B-103-A-Koridor2.jpg", "down": "B-103-A-Koridor", "up": "B-103-B" },
+            "B-103-B": { "img": "assets/floorplan/B-103-B.jpg", "right": "B-103-A-Koridor2", "left": "B-104-A" },
+            "B-104-A": { "img": "assets/floorplan/B-104-A.jpg", "right": "B-103-B", "left": "KU2-01-06" },
+            "KU2-01-06": { "img": "assets/floorplan/KU2-01-06.jpg", "right": "B-104-A" }
+          }
+        }
+      ]
+    }
+  ]
+}
