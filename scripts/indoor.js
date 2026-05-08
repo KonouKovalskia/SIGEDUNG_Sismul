@@ -91,6 +91,9 @@ requestAnimationFrame(() => requestAnimationFrame(syncBtnPos));
 
 async function run() {
   const id = getParam("id");
+  // BUG 3 FIX: redirect if no id, same as entrance.js
+  if (!id) { location.href = "./index.html"; return; }
+
   const floorQ = Number(getParam("floor") || 1);
 
   let data;
@@ -114,7 +117,10 @@ async function run() {
 
   const floorSel = document.getElementById("floorSel");
   floorSel.innerHTML = b.floors.map(f => `<option value="${f.floor}">${f.name || "Lantai " + f.floor}</option>`).join("");
-  floorSel.value = String(floorQ);
+
+  // BUG 4 FIX: clamp to a valid floor — if ?floor=99 has no match, use first available
+  const validFloor = b.floors.find(f => f.floor === floorQ) ? floorQ : b.floors[0].floor;
+  floorSel.value = String(validFloor);
 
   const viewImg = document.getElementById("viewImg");
   const viewLoading = document.getElementById("viewLoading");
@@ -213,7 +219,7 @@ async function run() {
     setParam("scene", "");
     loadFloor(floorSel.value);
   };
-  loadFloor(floorQ);
+  loadFloor(validFloor);
 }
 
 run();
