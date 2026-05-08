@@ -163,7 +163,7 @@ Each scene can have up to 4 neighbors: `up`, `down`, `left`, `right`. Omit any d
 
 ## 👤 Author
 
-Built with care by **Konou** — Telkom University.
+Built by **Prince Konou**
 
 ---
 
