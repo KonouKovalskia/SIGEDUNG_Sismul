@@ -17,16 +17,19 @@ export function injectErrorState(container, msg, backUrl = "./index.html") {
   if (!el) {
     el = document.createElement("div");
     el.className = "error-state visible";
+    // Build DOM manually — never interpolate msg into innerHTML (XSS risk)
     el.innerHTML = `
       <div class="error-icon">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
       </div>
       <div class="error-title">Gagal Memuat Data</div>
-      <div class="error-msg">${msg}</div>
+      <div class="error-msg"></div>
       <div class="error-actions">
-        <button class="error-btn" onclick="location.href='${backUrl}'">← Kembali</button>
+        <button class="error-btn back-btn">← Kembali</button>
         <button class="error-btn primary" onclick="location.reload()">Coba Lagi</button>
       </div>`;
+    el.querySelector(".error-msg").textContent = msg;
+    el.querySelector(".back-btn").addEventListener("click", () => { location.href = backUrl; });
     container.appendChild(el);
   } else {
     el.querySelector(".error-msg").textContent = msg;
