@@ -1,3 +1,4 @@
+html, body { overflow: hidden; }
 .app { display: flex; height: 100dvh; overflow: hidden; position: relative; }
 
 /* Sidebar */
