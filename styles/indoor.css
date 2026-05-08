@@ -1,3 +1,4 @@
+html, body { overflow: hidden; }
 body { display: flex; flex-direction: column; min-height: 100dvh; }
 
 .tb-info { flex: 1; min-width: 0; overflow: hidden; }
