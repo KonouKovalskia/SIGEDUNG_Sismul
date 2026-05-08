@@ -32,8 +32,8 @@
 }
 
 html, body { 
-  height: 100%; 
-  overflow: hidden; /* Managed by specific pages */
+  height: 100%;
+  /* overflow is set per-page: map/indoor use overflow:hidden, entrance uses default */
 }
 
 body {
