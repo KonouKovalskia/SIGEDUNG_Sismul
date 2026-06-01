@@ -189,10 +189,8 @@ async function run() {
       hudName.textContent = s.name || sid;
       hudId.textContent = sid;
 
-      // FIX 4: If image is already in browser cache (preloaded), the new Image()
-      // trick fires onload synchronously in most browsers — zero flicker.
-      // If not cached, show loader. Either way, don't blank the previous image
-      // until the new one is ready.
+      // FIX 4: Show skeleton shimmer only when image isn't already preloaded.
+      // If it's in preloadCache, swap is instant — no shimmer needed.
       const ni = new Image();
       ni.onload = () => {
         viewImg.src = ni.src;
@@ -204,10 +202,9 @@ async function run() {
         viewLoading.classList.add("done");
       };
 
-      // Only fade out if the new image isn't already cached
       if (!preloadCache.has(s.img)) {
         viewImg.style.opacity = "0";
-        viewLoading.classList.remove("done");
+        viewLoading.classList.remove("done"); // show shimmer
       }
 
       ni.src = s.img;
