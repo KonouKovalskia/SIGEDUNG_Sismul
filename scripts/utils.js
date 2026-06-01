@@ -6,10 +6,25 @@ export const setParam = (k, v) => {
   history.replaceState({}, "", u);
 };
 
+// FIX 1: Cache campus.json in sessionStorage so entrance→indoor navigation
+// doesn't re-fetch the JSON on every page. The data never changes mid-session.
+let _campusCache = null;
 export async function fetchCampusData() {
+  if (_campusCache) return _campusCache;
+
+  const KEY = "sigedung_campus";
+  const cached = sessionStorage.getItem(KEY);
+  if (cached) {
+    _campusCache = JSON.parse(cached);
+    return _campusCache;
+  }
+
   const res = await fetch("./data/campus.json");
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return await res.json();
+  const data = await res.json();
+  try { sessionStorage.setItem(KEY, JSON.stringify(data)); } catch (_) {}
+  _campusCache = data;
+  return data;
 }
 
 export function injectErrorState(container, msg, backUrl = "./index.html") {
@@ -17,7 +32,6 @@ export function injectErrorState(container, msg, backUrl = "./index.html") {
   if (!el) {
     el = document.createElement("div");
     el.className = "error-state visible";
-    // Build DOM manually — never interpolate msg into innerHTML (XSS risk)
     el.innerHTML = `
       <div class="error-icon">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>

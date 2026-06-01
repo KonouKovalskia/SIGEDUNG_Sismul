@@ -1,5 +1,7 @@
 import { getParam, setParam, fetchCampusData, injectErrorState } from './utils.js';
 
+// FIX 2: preloadCache persists across scene changes to avoid re-fetching
+// images the browser already has in cache. Set<> deduplication is correct here.
 const preloadCache = new Set();
 function preloadImage(src) {
   if (!src || preloadCache.has(src)) return;
@@ -45,7 +47,7 @@ panelCollapseBtn.addEventListener("click", () => {
 });
 
 const COLLAPSED_H = 48;
-let isMobilePanelCollapsed = false; 
+let isMobilePanelCollapsed = false;
 
 function initPanelHeight() {
   if (window.innerWidth > 720) {
@@ -91,7 +93,6 @@ requestAnimationFrame(() => requestAnimationFrame(syncBtnPos));
 
 async function run() {
   const id = getParam("id");
-  // BUG 3 FIX: redirect if no id, same as entrance.js
   if (!id) { location.href = "./index.html"; return; }
 
   const floorQ = Number(getParam("floor") || 1);
@@ -118,7 +119,6 @@ async function run() {
   const floorSel = document.getElementById("floorSel");
   floorSel.innerHTML = b.floors.map(f => `<option value="${f.floor}">${f.name || "Lantai " + f.floor}</option>`).join("");
 
-  // BUG 4 FIX: clamp to a valid floor — if ?floor=99 has no match, use first available
   const validFloor = b.floors.find(f => f.floor === floorQ) ? floorQ : b.floors[0].floor;
   floorSel.value = String(validFloor);
 
@@ -158,7 +158,7 @@ async function run() {
       if (b[0] === "entrance") return 1;
       return (a[1].name || a[0]).localeCompare(b[1].name || b[0]);
     });
-    for (const[sid, s] of entries) {
+    for (const [sid, s] of entries) {
       const btn = document.createElement("button");
       btn.className = "sc-btn";
       btn.dataset.sid = sid;
@@ -175,6 +175,11 @@ async function run() {
     const startScene = f.startScene || "entrance";
     const sceneQ = getParam("scene") || startScene;
 
+    // FIX 3: Preload the START scene image immediately on floor load,
+    // before goScene is called. This eliminates the loader flash on first view
+    // when the image isn't in browser cache yet.
+    if (scenes?.[sceneQ]?.img) preloadImage(scenes[sceneQ].img);
+
     function goScene(sid) {
       const s = scenes[sid];
       if (!s) return;
@@ -183,14 +188,29 @@ async function run() {
       setActive(sid);
       hudName.textContent = s.name || sid;
       hudId.textContent = sid;
-      viewImg.style.opacity = "0";
-      viewLoading.classList.remove("done");
-      
+
+      // FIX 4: If image is already in browser cache (preloaded), the new Image()
+      // trick fires onload synchronously in most browsers — zero flicker.
+      // If not cached, show loader. Either way, don't blank the previous image
+      // until the new one is ready.
       const ni = new Image();
-      ni.onload = () => { viewImg.src = ni.src; viewImg.style.opacity = "1"; viewLoading.classList.add("done"); };
-      ni.onerror = () => { viewImg.style.opacity = "1"; viewLoading.classList.add("done"); };
+      ni.onload = () => {
+        viewImg.src = ni.src;
+        viewImg.style.opacity = "1";
+        viewLoading.classList.add("done");
+      };
+      ni.onerror = () => {
+        viewImg.style.opacity = "1";
+        viewLoading.classList.add("done");
+      };
+
+      // Only fade out if the new image isn't already cached
+      if (!preloadCache.has(s.img)) {
+        viewImg.style.opacity = "0";
+        viewLoading.classList.remove("done");
+      }
+
       ni.src = s.img;
-      
       applyArrow(aUp, lUp, s.up, scenes[s.up]?.name, goScene);
       applyArrow(aDown, lDown, s.down, scenes[s.down]?.name, goScene);
       applyArrow(aLeft, lLeft, s.left, scenes[s.left]?.name, goScene);
@@ -206,9 +226,9 @@ async function run() {
     loadFloor._keyHandler = e => {
       const s = scenes[currentScene]; if (!s) return;
       const k = e.key.toLowerCase();
-      if (k === "arrowup" || k === "w") { e.preventDefault(); if (s.up) goScene(s.up); }
-      if (k === "arrowdown" || k === "s") { e.preventDefault(); if (s.down) goScene(s.down); }
-      if (k === "arrowleft" || k === "a") { e.preventDefault(); if (s.left) goScene(s.left); }
+      if (k === "arrowup"    || k === "w") { e.preventDefault(); if (s.up)    goScene(s.up); }
+      if (k === "arrowdown"  || k === "s") { e.preventDefault(); if (s.down)  goScene(s.down); }
+      if (k === "arrowleft"  || k === "a") { e.preventDefault(); if (s.left)  goScene(s.left); }
       if (k === "arrowright" || k === "d") { e.preventDefault(); if (s.right) goScene(s.right); }
     };
     window.addEventListener("keydown", loadFloor._keyHandler);

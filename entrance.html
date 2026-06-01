@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="./styles/tokens.css"/>
   <link rel="stylesheet" href="./styles/components.css"/>
   <link rel="stylesheet" href="./styles/entrance.css"/>
+
+  <!-- FIX 7: Preload campus.json (same hint as index.html — browser deduplicates
+       if already cached, so no wasted request) -->
+  <link rel="preload" href="./data/campus.json" as="fetch" crossorigin/>
 </head>
 <body>
   <header class="topbar">

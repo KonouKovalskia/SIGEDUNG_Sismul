@@ -5,12 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>TU Navigator — Telkom University</title>
 
+  <!-- FIX 5: preconnect to tile server so the DNS + TLS handshake is done
+       before Leaflet requests the first map tile -->
+  <link rel="preconnect" href="https://server.arcgisonline.com"/>
+  <link rel="dns-prefetch" href="https://unpkg.com"/>
+
+  <!-- Leaflet CSS before JS so no FOUC on map tiles -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <link rel="stylesheet" href="./styles/tokens.css"/>
   <link rel="stylesheet" href="./styles/components.css"/>
   <link rel="stylesheet" href="./styles/map.css"/>
+
+  <!-- FIX 6: preload campus.json — fetched immediately on JS parse anyway,
+       but preload hint tells the browser to start the request during HTML parse -->
+  <link rel="preload" href="./data/campus.json" as="fetch" crossorigin/>
 </head>
 <body>
   <div class="app">
