@@ -8,9 +8,6 @@
   <link rel="stylesheet" href="./styles/tokens.css"/>
   <link rel="stylesheet" href="./styles/components.css"/>
   <link rel="stylesheet" href="./styles/entrance.css"/>
-
-  <!-- FIX 7: Preload campus.json (same hint as index.html — browser deduplicates
-       if already cached, so no wasted request) -->
   <link rel="preload" href="./data/campus.json" as="fetch" crossorigin/>
 </head>
 <body>
@@ -27,7 +24,8 @@
   </header>
 
   <div class="scene" id="sceneContainer">
-    <div class="loading-overlay" id="loading"><div class="spinner"></div></div>
+    <!-- skeleton shimmer shown until entrance image loads -->
+    <div class="skeleton-overlay" id="loading"></div>
     <img class="scene-img" id="sceneImg" alt="Entrance view"/>
     <div class="scene-vignette"></div>
     <div class="scene-grad"></div>
