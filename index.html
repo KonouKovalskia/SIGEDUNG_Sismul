@@ -69,12 +69,169 @@
       <div class="sb-divider"></div>
       <div class="sb-section-label" id="sectionLabel">Semua Gedung</div>
       <div class="sb-list" id="bldList"></div>
+      <!-- FOOTER CREDITS -->
+      <div class="sb-footer">
+        <div class="sb-footer-divider"></div>
+        <div class="sb-footer-content">
+          <div class="sb-footer-app">SIGEDUNG &mdash; Campus Navigator</div>
+          <div class="sb-footer-copy">&copy; 2025 Telkom University &middot; Informatika</div>
+          <div class="sb-footer-team">
+            Muhammad Faiz Ghiffari &middot; Wikky Fawwaz Al Maki &middot; Edwardo Kevin Primaputra
+          </div>
+          <button class="sb-about-btn" id="aboutBtn">Tentang Aplikasi</button>
+        </div>
+      </div>
     </aside>
 
     <button class="collapse-btn" id="collapseBtn" title="Collapse sidebar">
       <svg class="collapse-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
     </button>
   </div>
+
+  <!-- ABOUT MODAL -->
+  <div class="about-overlay" id="aboutOverlay">
+    <div class="about-modal">
+      <button class="about-close" id="aboutClose" title="Tutup">&times;</button>
+      <div class="about-header">
+        <div class="about-logo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/></svg>
+        </div>
+        <div>
+          <div class="about-title">SIGEDUNG</div>
+          <div class="about-subtitle">Campus Navigator &mdash; Telkom University</div>
+        </div>
+      </div>
+      <p class="about-desc">
+        Aplikasi navigasi gedung kampus berbasis web yang memudahkan civitas akademika menemukan lokasi ruangan, fasilitas, dan gedung di lingkungan Telkom University.
+      </p>
+      <div class="about-section-label">Tim Pengusul</div>
+      <div class="about-team">
+        <div class="about-member">
+          <div class="about-member-dot"></div>
+          <div>
+            <div class="about-member-name">Muhammad Faiz Ghiffari</div>
+            <div class="about-member-role">Informatika &middot; Telkom University</div>
+          </div>
+        </div>
+        <div class="about-member">
+          <div class="about-member-dot"></div>
+          <div>
+            <div class="about-member-name">Wikky Fawwaz Al Maki</div>
+            <div class="about-member-role">Informatika &middot; Telkom University</div>
+          </div>
+        </div>
+        <div class="about-member">
+          <div class="about-member-dot"></div>
+          <div>
+            <div class="about-member-name">Edwardo Kevin Primaputra</div>
+            <div class="about-member-role">Informatika &middot; Telkom University</div>
+          </div>
+        </div>
+      </div>
+      <div class="about-section-label" style="margin-top:20px">Hak Kekayaan Intelektual</div>
+      <div class="about-haki">
+        Aplikasi ini diajukan sebagai karya cipta bersama atas nama seluruh tim pengusul di atas. Hak cipta &copy; 2025. Seluruh hak dilindungi.
+      </div>
+      <div class="about-tech">
+        Dibangun dengan Leaflet.js &middot; Vanilla JS &middot; HTML5 &middot; CSS3
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* ── SIDEBAR FOOTER ── */
+    .sb-footer { padding: 0 0 8px; }
+    .sb-footer-divider { height: 1px; background: var(--border); margin: 12px 16px; }
+    .sb-footer-content { padding: 0 16px 4px; }
+    .sb-footer-app { font-size: 11px; font-weight: 600; color: var(--text2); letter-spacing: .04em; text-transform: uppercase; }
+    .sb-footer-copy { font-size: 10px; color: var(--text3); margin-top: 2px; }
+    .sb-footer-team { font-size: 10px; color: var(--text3); margin-top: 4px; line-height: 1.5; }
+    .sb-about-btn {
+      margin-top: 10px;
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-family: 'Outfit', sans-serif;
+      color: var(--red); background: var(--red-dim);
+      border: 1px solid rgba(224,62,42,.25); border-radius: 6px;
+      padding: 5px 10px; cursor: pointer;
+      transition: background .15s, border-color .15s;
+    }
+    .sb-about-btn:hover { background: var(--red-glow); border-color: rgba(224,62,42,.45); }
+
+    /* ── ABOUT MODAL OVERLAY ── */
+    .about-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.65); backdrop-filter: blur(6px);
+      z-index: 9999; align-items: center; justify-content: center;
+    }
+    .about-overlay.open { display: flex; animation: fadeIn .18s ease; }
+    @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+
+    .about-modal {
+      position: relative;
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 14px; padding: 28px;
+      width: min(460px, calc(100vw - 32px));
+      box-shadow: 0 24px 60px rgba(0,0,0,.55);
+      animation: slideUp .22s var(--ease);
+    }
+    @keyframes slideUp { from { transform:translateY(16px); opacity:0 } to { transform:translateY(0); opacity:1 } }
+
+    .about-close {
+      position: absolute; top: 16px; right: 16px;
+      background: var(--surface3); border: 1px solid var(--border);
+      color: var(--text2); border-radius: 6px; width: 28px; height: 28px;
+      font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: color .15s, background .15s;
+    }
+    .about-close:hover { color: var(--text); background: var(--surface2); }
+
+    .about-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .about-logo {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--red); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; box-shadow: 0 0 16px var(--red-glow);
+    }
+    .about-title { font-size: 18px; font-weight: 700; color: var(--text); }
+    .about-subtitle { font-size: 12px; color: var(--text3); margin-top: 1px; }
+
+    .about-desc { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 20px; }
+
+    .about-section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--text3); margin-bottom: 10px;
+    }
+
+    .about-team { display: flex; flex-direction: column; gap: 10px; }
+    .about-member { display: flex; align-items: flex-start; gap: 10px; }
+    .about-member-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--red); flex-shrink: 0; margin-top: 4px;
+      box-shadow: 0 0 6px var(--red-glow);
+    }
+    .about-member-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .about-member-role { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+    .about-haki {
+      font-size: 11px; color: var(--text3); line-height: 1.6;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 12px; margin-top: 8px;
+    }
+
+    .about-tech {
+      font-size: 10px; color: var(--text3); text-align: center;
+      margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+    }
+  </style>
+
+  <script>
+    const aboutBtn     = document.getElementById('aboutBtn');
+    const aboutOverlay = document.getElementById('aboutOverlay');
+    const aboutClose   = document.getElementById('aboutClose');
+    aboutBtn.addEventListener('click', () => aboutOverlay.classList.add('open'));
+    aboutClose.addEventListener('click', () => aboutOverlay.classList.remove('open'));
+    aboutOverlay.addEventListener('click', e => { if (e.target === aboutOverlay) aboutOverlay.classList.remove('open'); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') aboutOverlay.classList.remove('open'); });
+  </script>
 
   <script type="module" src="./scripts/map.js"></script>
 </body>
