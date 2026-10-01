@@ -2,7 +2,7 @@
 
 > An interactive indoor & outdoor navigation platform for Telkom University campus. Walk through building entrances and explore interiors — all from your browser.
 
-**[View Live →](https://sigedung.vercel.app)**
+**[View Live →](https://sigedung.netlify.app)**
 
 ---
 
@@ -26,7 +26,7 @@
 ```
 HTML5 · CSS3 · JavaScript ES6 Modules
 Leaflet.js · Esri World Imagery · Google Fonts (Outfit)
-Vercel (Hosting)
+Netlify (Hosting)
 ```
 
 No build tools. No frameworks. No dependencies beyond Leaflet — ships as pure static files.

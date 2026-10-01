@@ -11,7 +11,7 @@
       "entrance": {
         "lat": -6.9734,
         "lng": 107.63205,
-        "image": "assets/entrance/cacuk-entrance.jpg"
+        "image": "assets/entrance/cacuk-entrance.webp"
       },
       "floors":[
         {
@@ -21,24 +21,24 @@
           "scenes": {
             "entrance": {
               "name": "Entrance",
-              "img": "assets/floorplan/TengahL1.jpg",
+              "img": "assets/floorplan/TengahL1.webp",
               "left": "west",
               "right": "east"
             },
-            "west": { "name": "Lorong Kiri", "img": "assets/floorplan/LeftL1.jpg", "down": "entrance", "up": "B-102" },
-            "B-102": { "name": "Depan B-102", "img": "assets/floorplan/B-102.jpg", "down": "west", "right": "B-102-Koridor1" },
-            "B-102-Koridor1": { "name": "Koridor B-102", "img": "assets/floorplan/B-102-Koridor1.jpg", "down": "B-102", "up": "KU2-01-02" },
-            "KU2-01-02": { "name": "Ruang KU2-01-02", "img": "assets/floorplan/KU2-01-02.jpg", "left": "B-102-Koridor1", "right": "KU2-01-01" },
-            "KU2-01-01": { "name": "Ruang KU2-01-01", "img": "assets/floorplan/KU2-01-01.jpg", "left": "KU2-01-02", "right": "Toilet1-L1" },
-            "Toilet1-L1": { "name": "Toilet Lantai 1", "img": "assets/floorplan/Toilet1-L1.jpg", "left": "KU2-01-01" },
-            "east": { "name": "Lorong Kanan", "img": "assets/floorplan/RightL1.jpg", "left": "entrance", "up": "KoridorL1" },
-            "KoridorL1": { "name": "Koridor Lantai 1", "img": "assets/floorplan/KoridorL1.jpg", "down": "east", "up": "B-103-A" },
-            "B-103-A": { "name": "Depan B-103 A", "img": "assets/floorplan/B-103-A.jpg", "right": "KoridorL1", "left": "B-103-A-Koridor" },
-            "B-103-A-Koridor": { "name": "Koridor B-103", "img": "assets/floorplan/B-103-A-Koridor.jpg", "down": "B-103-A", "up": "B-103-A-Koridor2" },
-            "B-103-A-Koridor2": { "name": "Koridor B-103 (Ujung)", "img": "assets/floorplan/B-103-A-Koridor2.jpg", "down": "B-103-A-Koridor", "up": "B-103-B" },
-            "B-103-B": { "name": "Depan B-103 B", "img": "assets/floorplan/B-103-B.jpg", "right": "B-103-A-Koridor2", "left": "B-104-A" },
-            "B-104-A": { "name": "Depan B-104 A", "img": "assets/floorplan/B-104-A.jpg", "right": "B-103-B", "left": "KU2-01-06" },
-            "KU2-01-06": { "name": "Ruang KU2-01-06", "img": "assets/floorplan/KU2-01-06.jpg", "right": "B-104-A" }
+            "west": { "name": "Lorong Kiri", "img": "assets/floorplan/LeftL1.webp", "down": "entrance", "up": "B-102" },
+            "B-102": { "name": "Depan B-102", "img": "assets/floorplan/B-102.webp", "down": "west", "right": "B-102-Koridor1" },
+            "B-102-Koridor1": { "name": "Koridor B-102", "img": "assets/floorplan/B-102-Koridor1.webp", "down": "B-102", "up": "KU2-01-02" },
+            "KU2-01-02": { "name": "Ruang KU2-01-02", "img": "assets/floorplan/KU2-01-02.webp", "left": "B-102-Koridor1", "right": "KU2-01-01" },
+            "KU2-01-01": { "name": "Ruang KU2-01-01", "img": "assets/floorplan/KU2-01-01.webp", "left": "KU2-01-02", "right": "Toilet1-L1" },
+            "Toilet1-L1": { "name": "Toilet Lantai 1", "img": "assets/floorplan/Toilet1-L1.webp", "left": "KU2-01-01" },
+            "east": { "name": "Lorong Kanan", "img": "assets/floorplan/RightL1.webp", "left": "entrance", "up": "KoridorL1" },
+            "KoridorL1": { "name": "Koridor Lantai 1", "img": "assets/floorplan/KoridorL1.webp", "down": "east", "up": "B-103-A" },
+            "B-103-A": { "name": "Depan B-103 A", "img": "assets/floorplan/B-103-A.webp", "right": "KoridorL1", "left": "B-103-A-Koridor" },
+            "B-103-A-Koridor": { "name": "Koridor B-103", "img": "assets/floorplan/B-103-A-Koridor.webp", "down": "B-103-A", "up": "B-103-A-Koridor2" },
+            "B-103-A-Koridor2": { "name": "Koridor B-103 (Ujung)", "img": "assets/floorplan/B-103-A-Koridor2.webp", "down": "B-103-A-Koridor", "up": "B-103-B" },
+            "B-103-B": { "name": "Depan B-103 B", "img": "assets/floorplan/B-103-B.webp", "right": "B-103-A-Koridor2", "left": "B-104-A" },
+            "B-104-A": { "name": "Depan B-104 A", "img": "assets/floorplan/B-104-A.webp", "right": "B-103-B", "left": "KU2-01-06" },
+            "KU2-01-06": { "name": "Ruang KU2-01-06", "img": "assets/floorplan/KU2-01-06.webp", "right": "B-104-A" }
           }
         }
       ]

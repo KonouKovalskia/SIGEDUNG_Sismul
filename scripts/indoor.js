@@ -1,20 +1,25 @@
 import { getParam, setParam, fetchCampusData, injectErrorState } from './utils.js';
 
-// FIX 2: preloadCache persists across scene changes to avoid re-fetching
-// images the browser already has in cache. Set<> deduplication is correct here.
+// Started preloads, deduped across scene changes. Started ≠ finished, so
+// goScene checks img.complete instead of this set before skipping the shimmer.
 const preloadCache = new Set();
-function preloadImage(src) {
+function preloadImage(src, priority = "auto") {
   if (!src || preloadCache.has(src)) return;
   preloadCache.add(src);
   const img = new Image();
+  img.fetchPriority = priority;
   img.src = src;
 }
 function preloadAdjacent(scenes, currentId) {
   const s = scenes[currentId];
   if (!s) return;
   ["up","down","left","right"].forEach(dir => {
-    if (s[dir]) preloadImage(scenes[s[dir]]?.img);
+    if (s[dir]) preloadImage(scenes[s[dir]]?.img, "high");
   });
+  // Then the rest of the floor, low priority, once the browser is idle.
+  // ponytail: whole floor (~2 MB), switch to 2-hop neighbours if floors grow past ~40 scenes
+  (window.requestIdleCallback || setTimeout)(() =>
+    Object.values(scenes).forEach(x => preloadImage(x.img, "low")));
 }
 
 // Location list: a floating dropdown under the "Lokasi" button.
@@ -110,11 +115,6 @@ async function run() {
     const startScene = f.startScene || "entrance";
     const sceneQ = scenes?.[getParam("scene")] ? getParam("scene") : startScene;
 
-    // FIX 3: Preload the START scene image immediately on floor load,
-    // before goScene is called. This eliminates the loader flash on first view
-    // when the image isn't in browser cache yet.
-    if (scenes?.[sceneQ]?.img) preloadImage(scenes[sceneQ].img);
-
     function goScene(sid) {
       const s = scenes[sid];
       if (!s) return;
@@ -124,25 +124,22 @@ async function run() {
       hudName.textContent = s.name || sid;
       hudId.textContent = s.name && s.name !== sid ? sid : "";
 
-      // FIX 4: Show skeleton shimmer only when image isn't already preloaded.
-      // If it's in preloadCache, swap is instant — no shimmer needed.
+      // Shimmer whenever the image isn't decoded yet — including a preload
+      // that started but hasn't finished. Stale loads from fast clicking are ignored.
       const ni = new Image();
-      ni.onload = () => {
-        viewImg.src = ni.src;
+      const show = () => {
+        if (currentScene !== sid) return;
+        if (ni.naturalWidth) viewImg.src = ni.src;
         viewImg.style.opacity = "1";
         viewLoading.classList.add("done");
       };
-      ni.onerror = () => {
-        viewImg.style.opacity = "1";
-        viewLoading.classList.add("done");
-      };
-
-      if (!preloadCache.has(s.img)) {
-        viewImg.style.opacity = "0";
-        viewLoading.classList.remove("done"); // show shimmer
-      }
-
+      ni.onload = show;
+      ni.onerror = show;
       ni.src = s.img;
+      if (!ni.complete) {
+        viewImg.style.opacity = "0";
+        viewLoading.classList.remove("done");
+      }
       applyArrow(aUp, lUp, s.up, scenes[s.up]?.name, goScene);
       applyArrow(aDown, lDown, s.down, scenes[s.down]?.name, goScene);
       applyArrow(aLeft, lLeft, s.left, scenes[s.left]?.name, goScene);

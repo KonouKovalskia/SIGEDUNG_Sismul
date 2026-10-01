@@ -24,7 +24,13 @@ async function init() {
 
   const img = document.getElementById("sceneImg");
   const loading = document.getElementById("loading");
-  img.onload  = () => loading.classList.add("done");
+  // Warm the first indoor scene while the user looks at the entrance.
+  const f1 = b.floors[0];
+  img.onload  = () => {
+    loading.classList.add("done");
+    const first = f1?.scenes?.[f1.startScene || "entrance"]?.img;
+    if (first) new Image().src = first;
+  };
   img.onerror = () => loading.classList.add("done");
   img.src = b.entrance.image;
 

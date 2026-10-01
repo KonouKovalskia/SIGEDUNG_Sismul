@@ -50,7 +50,7 @@
 /* Skeleton shimmer overlay — replaces the old spinner overlay */
 .skeleton-overlay {
   position: absolute; inset: 0; z-index: 25;
-  background: var(--bg);
+  background: var(--surface);
   transition: opacity .25s ease, visibility .25s ease;
 }
 .skeleton-overlay.done {
@@ -64,7 +64,7 @@
   background: linear-gradient(
     105deg,
     transparent 35%,
-    rgba(255,255,255,.045) 50%,
+    rgba(255,255,255,.09) 50%,
     transparent 65%
   );
   background-size: 200% 100%;

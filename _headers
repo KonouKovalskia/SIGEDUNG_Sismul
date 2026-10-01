@@ -1,0 +1,3 @@
+# ponytail: 1-day cache, filenames aren't hashed; rename an image when replacing it, or go immutable once they are
+/assets/*
+  Cache-Control: public, max-age=86400

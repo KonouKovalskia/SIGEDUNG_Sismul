@@ -12,7 +12,7 @@ let _campusCache = null;
 export async function fetchCampusData() {
   if (_campusCache) return _campusCache;
 
-  const KEY = "sigedung_campus";
+  const KEY = "sigedung_campus_v2";
   const cached = sessionStorage.getItem(KEY);
   if (cached) {
     _campusCache = JSON.parse(cached);
