@@ -17,79 +17,19 @@ function preloadAdjacent(scenes, currentId) {
   });
 }
 
+// Location list: a floating dropdown under the "Lokasi" button.
 const scenePanel = document.getElementById("scenePanel");
-const panelCollapseBtn = document.getElementById("panelCollapseBtn");
-const mobilePanelToggle = document.getElementById("mobilePanelToggle");
-let isPanelCollapsed = false;
-let rafId = null;
-
-function syncBtnPos() {
-  const r = scenePanel.getBoundingClientRect();
-  panelCollapseBtn.style.left = r.right + "px";
+const locBtn = document.getElementById("locBtn");
+function setPanel(open) {
+  scenePanel.hidden = !open;
+  locBtn.setAttribute("aria-expanded", String(open));
+  if (open) scenePanel.querySelector(".sc-btn.active")?.scrollIntoView({ block: "nearest" });
 }
-
-function animateBtnPos(duration = 300) {
-  const start = performance.now();
-  function frame(now) {
-    syncBtnPos();
-    if (now - start < duration) rafId = requestAnimationFrame(frame);
-    else syncBtnPos();
-  }
-  cancelAnimationFrame(rafId);
-  rafId = requestAnimationFrame(frame);
-}
-
-panelCollapseBtn.addEventListener("click", () => {
-  isPanelCollapsed = !isPanelCollapsed;
-  scenePanel.classList.toggle("collapsed", isPanelCollapsed);
-  panelCollapseBtn.classList.toggle("is-collapsed", isPanelCollapsed);
-  animateBtnPos();
+locBtn.addEventListener("click", () => setPanel(scenePanel.hidden));
+document.addEventListener("click", e => {
+  if (!scenePanel.hidden && !e.target.closest(".tools")) setPanel(false);
 });
-
-const COLLAPSED_H = 48;
-let isMobilePanelCollapsed = false;
-
-function initPanelHeight() {
-  if (window.innerWidth > 720) {
-    scenePanel.style.height = "";
-    return;
-  }
-  scenePanel.classList.remove("mobile-collapsed");
-  isMobilePanelCollapsed = false;
-  scenePanel.style.height = "auto";
-  const expandedPanelH = Math.min(scenePanel.scrollHeight, Math.round(window.innerHeight * 0.42));
-  scenePanel.style.height = expandedPanelH + "px";
-}
-
-mobilePanelToggle.addEventListener("click", () => {
-  isMobilePanelCollapsed = !isMobilePanelCollapsed;
-  if (isMobilePanelCollapsed) {
-    scenePanel.classList.add("mobile-collapsed");
-    scenePanel.style.height = COLLAPSED_H + "px";
-  } else {
-    scenePanel.style.visibility = "hidden";
-    scenePanel.style.height = "auto";
-    const naturalH = Math.min(scenePanel.scrollHeight, Math.round(window.innerHeight * 0.42));
-    scenePanel.style.height = COLLAPSED_H + "px";
-    scenePanel.style.visibility = "";
-    scenePanel.getBoundingClientRect(); // force reflow
-    scenePanel.classList.remove("mobile-collapsed");
-    scenePanel.style.height = naturalH + "px";
-  }
-});
-
-window.addEventListener("resize", () => {
-  initPanelHeight();
-  if (window.innerWidth > 720) {
-    syncBtnPos();
-    if (isMobilePanelCollapsed) {
-      isMobilePanelCollapsed = false;
-      scenePanel.classList.remove("mobile-collapsed");
-    }
-  }
-});
-
-requestAnimationFrame(() => requestAnimationFrame(syncBtnPos));
+document.addEventListener("keydown", e => { if (e.key === "Escape") setPanel(false); });
 
 async function run() {
   const id = getParam("id");
@@ -112,8 +52,6 @@ async function run() {
   }
 
   document.getElementById("tbName").textContent = b.name;
-  document.getElementById("spTitle").textContent = b.name;
-  document.getElementById("mobilePanelLabel").textContent = b.name;
   document.getElementById("toEntrance").href = `./entrance.html?id=${encodeURIComponent(b.id)}`;
 
   const floorSel = document.getElementById("floorSel");
@@ -145,9 +83,6 @@ async function run() {
 
   function setActive(sid) {
     spList.querySelectorAll(".sc-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.sid === sid));
-    if (isMobilePanelCollapsed) return;
-    const active = spList.querySelector(`.sc-btn[data-sid="${sid}"]`);
-    active?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
   function buildSceneList(scenes, goFn) {
@@ -163,7 +98,7 @@ async function run() {
       btn.className = "sc-btn";
       btn.dataset.sid = sid;
       btn.innerHTML = `<span class="sc-btn-name">${s.name || sid}</span><span class="sc-btn-id">${sid}</span>`;
-      btn.onclick = () => goFn(sid);
+      btn.onclick = () => { goFn(sid); setPanel(false); };
       spList.appendChild(btn);
     }
   }
@@ -173,7 +108,7 @@ async function run() {
     if (!f) return;
     const scenes = f.scenes || null;
     const startScene = f.startScene || "entrance";
-    const sceneQ = getParam("scene") || startScene;
+    const sceneQ = scenes?.[getParam("scene")] ? getParam("scene") : startScene;
 
     // FIX 3: Preload the START scene image immediately on floor load,
     // before goScene is called. This eliminates the loader flash on first view
@@ -187,7 +122,7 @@ async function run() {
       setParam("scene", sid);
       setActive(sid);
       hudName.textContent = s.name || sid;
-      hudId.textContent = sid;
+      hudId.textContent = s.name && s.name !== sid ? sid : "";
 
       // FIX 4: Show skeleton shimmer only when image isn't already preloaded.
       // If it's in preloadCache, swap is instant — no shimmer needed.
@@ -217,7 +152,6 @@ async function run() {
 
     buildSceneList(scenes, goScene);
     goScene(sceneQ);
-    requestAnimationFrame(() => initPanelHeight());
 
     if (loadFloor._keyHandler) window.removeEventListener("keydown", loadFloor._keyHandler);
     loadFloor._keyHandler = e => {

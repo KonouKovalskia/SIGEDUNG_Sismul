@@ -2,7 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="description" content="SIGEDUNG — jelajahi gedung Telkom University dari pintu masuk sampai ke dalam ruangan, langsung dari browser."/>
   <title>TU Navigator — Telkom University</title>
 
   <!-- FIX 5: preconnect to tile server so the DNS + TLS handshake is done
@@ -23,70 +24,29 @@
   <link rel="preload" href="./data/campus.json" as="fetch" crossorigin/>
 </head>
 <body>
-  <div class="app">
-    <main class="map-area" id="mapArea">
-      <div id="map"></div>
-    </main>
+  <main class="full-bleed"><div id="map"></div></main>
 
-    <aside class="sidebar no-transition" id="sidebar">
-      <div class="rail-brand">
-        <div class="sb-brand-mark">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/></svg>
-        </div>
+  <header class="float f-top f-left brand-card">
+    <div class="brand-row">
+      <div class="brand-mark">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/></svg>
       </div>
-      <div class="rail-list" id="railList"></div>
-
-      <div class="sheet-handle" id="sheetHandle" style="display:none">
-        <div class="sheet-handle-bar"></div>
-        <div class="sheet-peek">
-          <div class="sheet-peek-dot"></div>
-          <div class="sheet-peek-title">
-            <div>SIGEDUNG</div>
-            <div style="font-size:11px; color: var(--text3); font-weight:400;">Campus Navigator</div>
-          </div>
-          <span class="sheet-peek-count" id="peekCount"></span>
-          <svg class="sheet-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
-        </div>
+      <div class="brand-text">
+        <div class="brand-title">SIGEDUNG</div>
+        <div class="brand-sub">Telkom University · Campus Navigator</div>
       </div>
+    </div>
+    <label class="search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="searchQ" type="search" placeholder="Cari gedung atau ruangan…" autocomplete="off" aria-label="Cari gedung atau ruangan"/>
+    </label>
+    <div class="brand-foot">
+      <span>&copy; 2025 Telkom University &middot; Informatika</span>
+      <button class="about-link" id="aboutBtn">Tentang Aplikasi</button>
+    </div>
+  </header>
 
-      <div class="sb-head">
-        <div class="sb-brand">
-          <div class="sb-brand-mark">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/></svg>
-          </div>
-          <span class="sb-brand-text">Telkom University</span>
-        </div>
-        <div class="sb-title-block">
-          <div class="sb-title">SIGEDUNG</div>
-          <div class="sb-sub">Campus Navigator</div>
-        </div>
-        <div class="sb-search">
-          <svg class="sb-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input id="searchQ" placeholder="Cari gedung…" autocomplete="off"/>
-        </div>
-      </div>
-
-      <div class="sb-divider"></div>
-      <div class="sb-section-label" id="sectionLabel">Semua Gedung</div>
-      <div class="sb-list" id="bldList"></div>
-      <!-- FOOTER CREDITS -->
-      <div class="sb-footer">
-        <div class="sb-footer-divider"></div>
-        <div class="sb-footer-content">
-          <div class="sb-footer-app">SIGEDUNG &mdash; Campus Navigator</div>
-          <div class="sb-footer-copy">&copy; 2025 Telkom University &middot; Informatika</div>
-          <div class="sb-footer-team">
-            Muhammad Faiz Ghiffari &middot; Wikky Fawwaz Al Maki &middot; Edwardo Kevin Primaputra
-          </div>
-          <button class="sb-about-btn" id="aboutBtn">Tentang Aplikasi</button>
-        </div>
-      </div>
-    </aside>
-
-    <button class="collapse-btn" id="collapseBtn" title="Collapse sidebar">
-      <svg class="collapse-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-    </button>
-  </div>
+  <nav class="bld-strip" id="bldList" aria-label="Daftar gedung"></nav>
 
   <!-- ABOUT MODAL -->
   <div class="about-overlay" id="aboutOverlay">
@@ -139,24 +99,6 @@
   </div>
 
   <style>
-    /* ── SIDEBAR FOOTER ── */
-    .sb-footer { padding: 0 0 8px; }
-    .sb-footer-divider { height: 1px; background: var(--border); margin: 12px 16px; }
-    .sb-footer-content { padding: 0 16px 4px; }
-    .sb-footer-app { font-size: 11px; font-weight: 600; color: var(--text2); letter-spacing: .04em; text-transform: uppercase; }
-    .sb-footer-copy { font-size: 10px; color: var(--text3); margin-top: 2px; }
-    .sb-footer-team { font-size: 10px; color: var(--text3); margin-top: 4px; line-height: 1.5; }
-    .sb-about-btn {
-      margin-top: 10px;
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 11px; font-family: 'Outfit', sans-serif;
-      color: var(--red); background: var(--red-dim);
-      border: 1px solid rgba(224,62,42,.25); border-radius: 6px;
-      padding: 5px 10px; cursor: pointer;
-      transition: background .15s, border-color .15s;
-    }
-    .sb-about-btn:hover { background: var(--red-glow); border-color: rgba(224,62,42,.45); }
-
     /* ── ABOUT MODAL OVERLAY ── */
     .about-overlay {
       display: none; position: fixed; inset: 0;

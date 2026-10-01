@@ -1,91 +1,9 @@
 import { fetchCampusData, injectErrorState } from './utils.js';
 
-const sidebar = document.getElementById("sidebar");
-const collapseBtn = document.getElementById("collapseBtn");
-const sheetHandle = document.getElementById("sheetHandle");
-const mapArea = document.getElementById("mapArea");
-const peekCount = document.getElementById("peekCount");
-
-let isRail = false;
-let isSheetOpen = false;
-let leafMap = null;
-
-const isMobile = () => window.innerWidth <= 820;
-
-function applyMode() {
-  if (isMobile()) {
-    sheetHandle.style.display = "flex";
-    collapseBtn.style.display = "none";
-    sidebar.style.transform = "";
-    if (leafMap) leafMap.zoomControl.setPosition("topright");
-  } else {
-    sheetHandle.style.display = "none";
-    collapseBtn.style.display = "grid";
-    sidebar.style.transform = "";
-    sidebar.classList.remove("sheet-open");
-    isSheetOpen = false;
-    if (leafMap) leafMap.zoomControl.setPosition("topleft");
-    requestAnimationFrame(syncBtnPos);
-  }
-}
-applyMode();
-requestAnimationFrame(() => requestAnimationFrame(() => {
-  sidebar.classList.remove("no-transition");
-}));
-window.addEventListener("resize", applyMode);
-
-function syncBtnPos() {
-  const sbRect = sidebar.getBoundingClientRect();
-  collapseBtn.style.left = (sbRect.left - 18) + "px";
-}
-
-let rafId = null;
-function animateBtnPos(duration = 340) {
-  const start = performance.now();
-  function frame(now) {
-    syncBtnPos();
-    if (now - start < duration) rafId = requestAnimationFrame(frame);
-    else syncBtnPos();
-  }
-  cancelAnimationFrame(rafId);
-  rafId = requestAnimationFrame(frame);
-}
-
-collapseBtn.addEventListener("click", () => {
-  isRail = !isRail;
-  sidebar.classList.toggle("rail", isRail);
-  collapseBtn.classList.toggle("is-rail", isRail);
-  animateBtnPos();
-  if (leafMap) setTimeout(() => leafMap.invalidateSize({ animate: true }), 340);
-});
-
-requestAnimationFrame(() => requestAnimationFrame(syncBtnPos));
-window.addEventListener("resize", syncBtnPos);
-
-sheetHandle.addEventListener("click", () => {
-  isSheetOpen = !isSheetOpen;
-  sidebar.classList.toggle("sheet-open", isSheetOpen);
-  sidebar.style.transform = "";
-});
-mapArea.addEventListener("click", () => {
-  if (!isMobile() || !isSheetOpen) return;
-  isSheetOpen = false;
-  sidebar.classList.remove("sheet-open");
-  sidebar.style.transform = "";
-});
-
-let ty = 0;
-sidebar.addEventListener("touchstart", e => { ty = e.touches[0].clientY; }, { passive: true });
-sidebar.addEventListener("touchend", e => {
-  if (!isMobile()) return;
-  const dy = e.changedTouches[0].clientY - ty;
-  if (dy > 48)  { isSheetOpen = false; sidebar.classList.remove("sheet-open"); sidebar.style.transform = ""; }
-  if (dy < -48) { isSheetOpen = true;  sidebar.classList.add("sheet-open"); sidebar.style.transform = ""; }
-}, { passive: true });
-
-new ResizeObserver(() => {
-  if (leafMap) leafMap.invalidateSize({ animate: false });
-}).observe(mapArea);
+const entranceUrl = b => `./entrance.html?id=${encodeURIComponent(b.id)}`;
+// "ku2 01 06", "KU2-01-06" and "ku20106" all match the same room.
+const norm = x => (x || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+const sceneCount = b => b.floors.reduce((n, f) => n + Object.keys(f.scenes || {}).length, 0);
 
 async function init() {
   let data;
@@ -93,99 +11,88 @@ async function init() {
     data = await fetchCampusData();
   } catch (e) {
     console.error("Failed to load campus.json:", e);
-    // BUG 5 FIX: inject into sidebar (has position:relative), not bldList
-    injectErrorState(sidebar, "Tidak dapat memuat campus.json. Periksa koneksi Anda.", "./index.html");
+    injectErrorState(document.body, "Tidak dapat memuat campus.json. Periksa koneksi Anda.");
     return;
   }
 
   const first = data.buildings[0];
-  const clat  = first?.location?.lat ?? -6.9734;
-  const clng  = first?.location?.lng ?? 107.6321;
-
-  leafMap = L.map("map", { center:[clat, clng], zoom: 18, zoomControl: true });
-
+  const map = L.map("map", {
+    center: [first?.location?.lat ?? -6.9734, first?.location?.lng ?? 107.6321],
+    zoom: 18, zoomControl: false,
+  });
+  L.control.zoom({ position: "topright" }).addTo(map);
   L.tileLayer(
     "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     { attribution: "© Esri", maxZoom: 22 }
-  ).addTo(leafMap);
+  ).addTo(map);
 
-  applyMode();
+  const bldList = document.getElementById("bldList");
+  const searchQ = document.getElementById("searchQ");
+  let markers = [];
 
-  const bldList   = document.getElementById("bldList");
-  const railList  = document.getElementById("railList");
-  const searchQ   = document.getElementById("searchQ");
-  const secLabel  = document.getElementById("sectionLabel");
-  let markers     =[];
-
-  function buildMarkers(buildings) {
-    markers.forEach(m => leafMap.removeLayer(m));
-    markers =[];
-    buildings.forEach(b => {
-      const lat = b.location?.lat ?? b.entrance.lat;
-      const lng = b.location?.lng ?? b.entrance.lng;
-      const icon = L.divIcon({
-        html: `<div class="mk-wrap">
-                 <div class="mk-pill"><div class="mk-dot"></div>${b.name}</div>
-                 <div class="mk-tail"></div>
-               </div>`,
-        className: "", iconSize: [160, 48], iconAnchor: [80, 48], popupAnchor: [0, -52],
-      });
-      const m = L.marker([lat, lng], { icon }).addTo(leafMap);
-      m.bindPopup(`
-        <div class="map-popup">
-          <div class="mp-tag">Gedung Kampus</div>
-          <div class="mp-name">${b.name}</div>
-          <button class="mp-btn" onclick="location.href='./entrance.html?id=${encodeURIComponent(b.id)}'">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            Lihat Entrance
-          </button>
-        </div>`, { maxWidth: 240 }
-      );
-      markers.push(m);
-    });
+  // Marker tap highlights its card (and vice versa) instead of opening a popup.
+  function select(id, scroll = true) {
+    bldList.querySelectorAll(".bld-card").forEach(c => c.classList.toggle("active", c.dataset.id === id));
+    markers.forEach(m => m.getElement()?.querySelector(".mk-wrap")?.classList.toggle("active", m.bid === id));
+    if (scroll) bldList.querySelector(`.bld-card[data-id="${CSS.escape(id)}"]`)?.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
   }
 
-  function buildList(buildings, isFiltered) {
-    bldList.innerHTML = "";
-    railList.innerHTML = "";
-    const count = buildings.length;
-    peekCount.textContent = count ? `${count} gedung` : "";
-    secLabel.textContent = !isFiltered ? "Semua Gedung" : (count ? `${count} Gedung Ditemukan` : "Tidak Ditemukan");
+  function render(q) {
+    q = norm(q);
+    const rooms = !q ? [] : data.buildings.flatMap(b => b.floors.flatMap(f =>
+      Object.entries(f.scenes || {})
+        .filter(([sid, sc]) => norm(sid).includes(q) || norm(sc.name).includes(q))
+        .map(([sid, sc]) => ({ b, f, sid, name: sc.name || sid }))));
+    const buildings = data.buildings.filter(b => norm(b.name).includes(q) || rooms.some(r => r.b === b));
 
-    if (!count) {
-      bldList.innerHTML = `<div class="sb-empty">Tidak ada gedung ditemukan.</div>`;
-      return;
-    }
+    markers.forEach(m => map.removeLayer(m));
+    markers = buildings.map(b => {
+      const icon = L.divIcon({
+        html: `<div class="mk-wrap"><div class="mk-pill"><div class="mk-dot"></div>${b.name}</div><div class="mk-tail"></div></div>`,
+        className: "", iconSize: [160, 44], iconAnchor: [80, 44],
+      });
+      const m = L.marker([b.location?.lat ?? b.entrance.lat, b.location?.lng ?? b.entrance.lng], { icon }).addTo(map);
+      m.bid = b.id;
+      m.on("click", () => { select(b.id); map.panTo(m.getLatLng()); });
+      return m;
+    });
 
+    bldList.innerHTML = buildings.length || rooms.length ? "" : `<div class="bld-empty">Tidak ada gedung ditemukan.</div>`;
     buildings.forEach((b, i) => {
+      const n = sceneCount(b);
       const card = document.createElement("a");
       card.className = "bld-card";
-      card.href = `./entrance.html?id=${encodeURIComponent(b.id)}`;
-      card.style.animationDelay = `${i * .04}s`;
+      card.href = entranceUrl(b);
+      card.dataset.id = b.id;
+      card.style.animationDelay = `${i * .05}s`;
       card.innerHTML = `
-        <img class="bld-thumb" src="${b.thumbnail}" alt="${b.name}" loading="lazy"/>
+        <img class="bld-thumb" src="${b.thumbnail}" alt="" loading="lazy"/>
         <div class="bld-info">
-          <div class="bld-name">${b.name}</div>
-          <div class="bld-meta">${b.entrance.lat.toFixed(4)}, ${b.entrance.lng.toFixed(4)}</div>
+          <div class="bld-name"></div>
+          <div class="bld-meta">${b.floors.length} lantai · ${n} lokasi</div>
         </div>
-        <svg class="bld-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>`;
+        <span class="bld-go">Masuk <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>`;
+      card.querySelector(".bld-name").textContent = b.name;
+      card.addEventListener("mouseenter", () => select(b.id, false));
       bldList.appendChild(card);
-
-      const ri = document.createElement("a");
-      ri.className = "rail-item";
-      ri.href = `./entrance.html?id=${encodeURIComponent(b.id)}`;
-      ri.setAttribute("data-name", b.name);
-      ri.innerHTML = `<img src="${b.thumbnail}" alt="${b.name}" loading="lazy"/>`;
-      railList.appendChild(ri);
     });
-  }
 
-  function render(f) {
-    const q = (f || "").trim().toLowerCase();
-    const isFiltered = q.length > 0;
-    const buildings = data.buildings.filter(b => (b.name || "").toLowerCase().includes(q));
-    buildList(buildings, isFiltered);
-    buildMarkers(buildings);
+    rooms.slice(0, 12).forEach(r => {
+      const card = document.createElement("a");
+      card.className = "bld-card room-card";
+      card.href = `./indoor.html?id=${encodeURIComponent(r.b.id)}&floor=${r.f.floor}&scene=${encodeURIComponent(r.sid)}`;
+      card.innerHTML = `
+        <div class="room-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16M14 12h.01"/></svg></div>
+        <div class="bld-info">
+          <div class="bld-name"></div>
+          <div class="bld-meta"></div>
+        </div>
+        <span class="bld-go">Lihat <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>`;
+      card.querySelector(".bld-name").textContent = r.name;
+      card.querySelector(".bld-meta").textContent = `${r.b.name} · ${r.f.name || "Lantai " + r.f.floor}`;
+      card.addEventListener("mouseenter", () => select(r.b.id, false));
+      bldList.appendChild(card);
+    });
   }
 
   searchQ.addEventListener("input", e => render(e.target.value));

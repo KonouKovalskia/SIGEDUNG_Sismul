@@ -1,23 +1,29 @@
-/* Topbar */
-.topbar {
-  min-height: 54px;
-  display: flex; align-items: center; gap: 8px;
-  padding: 0 16px;
-  padding-top: max(env(safe-area-inset-top), 0px);
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0; z-index: 30;
+/* Floating cards: every control sits on top of the full-bleed map or photo */
+.float {
+  position: fixed; z-index: 30;
+  background: var(--glass); border: 1px solid var(--glass-border); border-radius: 14px;
+  backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: var(--float-shadow);
 }
-.tb-btn {
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
-  background: transparent; color: var(--text2);
-  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 500;
-  text-decoration: none; cursor: pointer; transition: background .12s, color .12s, border-color .12s;
-  white-space: nowrap; flex-shrink: 0;
+.f-top    { top: max(var(--gap), env(safe-area-inset-top)); }
+.f-bottom { bottom: max(var(--gap), env(safe-area-inset-bottom)); }
+.f-left   { left: var(--gap); }
+.f-right  { right: var(--gap); }
+
+.crumb { display: flex; align-items: center; gap: 4px; padding: 5px; max-width: calc(100vw - 2 * var(--gap)); }
+.icon-btn {
+  display: grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0;
+  border-radius: 10px; border: none; background: transparent; color: var(--text2);
+  text-decoration: none; cursor: pointer; transition: background .12s, color .12s;
 }
-.tb-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--border2); }
-.tb-sep { width: 1px; height: 18px; background: var(--border); flex-shrink: 0; }
+.icon-btn:hover { background: rgba(255,255,255,.08); color: var(--text); }
+.crumb-text { display: flex; flex-direction: column; min-width: 0; padding: 0 10px 0 4px; line-height: 1.15; }
+.crumb-tag { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--red); }
+.crumb-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.full-bleed { position: fixed; inset: 0; overflow: hidden; background: #080808; }
+.bleed-img { width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; -webkit-user-drag: none; transition: opacity .22s var(--ease); }
+.vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.55) 100%); }
 
 /* Arrows */
 .arrow {
@@ -85,7 +91,7 @@
 
 /* Shared Errors */
 .error-state {
-  position: absolute; inset: 0; z-index: 50; display: none; flex-direction: column;
+  position: fixed; inset: 0; z-index: 50; display: none; flex-direction: column;
   align-items: center; justify-content: center; gap: 14px; padding: 32px;
   background: var(--bg); text-align: center;
 }

@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>Indoor — TU Navigator</title>
 
   <link rel="stylesheet" href="./styles/tokens.css"/>
@@ -10,61 +10,46 @@
   <link rel="stylesheet" href="./styles/indoor.css"/>
 </head>
 <body>
-  <header class="topbar">
-    <a class="tb-btn" id="toEntrance" href="#">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      <span>Back</span>
-    </a>
-    <div class="tb-sep"></div>
-    <div class="tb-info">
-      <span class="tb-tag">Indoor</span>
-      <div class="tb-name" id="tbName">—</div>
+  <main class="full-bleed view-area">
+    <div class="skeleton-overlay done" id="viewLoading"></div>
+    <img class="bleed-img" id="viewImg" alt="Tampilan lokasi"/>
+    <div class="vignette"></div>
+
+    <button class="arrow up hidden" id="aUp"><div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div><div class="arrow-label" id="lUp">Atas</div></button>
+    <button class="arrow down hidden" id="aDown"><div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div><div class="arrow-label" id="lDown">Bawah</div></button>
+    <button class="arrow left hidden" id="aLeft"><div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div><div class="arrow-label" id="lLeft">Kiri</div></button>
+    <button class="arrow right hidden" id="aRight"><div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 19l7-7-7-7"/></svg></div><div class="arrow-label" id="lRight">Kanan</div></button>
+
+    <div class="float hud" id="hud">
+      <div class="hud-dot"></div>
+      <span class="hud-name" id="hudName">—</span>
+      <span class="hud-id" id="hudId"></span>
     </div>
-    <div class="tb-right">
-      <span class="floor-label">Lantai</span>
-      <select class="floor-sel" id="floorSel"></select>
+
+    <div class="kbd-hint" aria-hidden="true">
+      <div class="k">W</div><div class="k">A</div><div class="k">S</div><div class="k">D</div>
+      <span class="k-sep">navigasi</span>
+    </div>
+  </main>
+
+  <header class="float f-top f-left crumb">
+    <a class="icon-btn" id="toEntrance" href="#" aria-label="Kembali ke entrance"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></a>
+    <div class="crumb-text">
+      <span class="crumb-tag">Indoor</span>
+      <span class="crumb-name" id="tbName">—</span>
     </div>
   </header>
 
-  <div class="content">
-    <aside class="scene-panel" id="scenePanel">
-      <button class="mobile-panel-toggle" id="mobilePanelToggle">
-        <span id="mobilePanelLabel">Daftar Lokasi</span>
-        <svg class="mobile-panel-toggle-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
-      </button>
-      <div class="sp-head">
-        <div class="sp-head-title" id="spTitle">Daftar Lokasi</div>
-        <div class="sp-head-sub">Klik untuk navigasi langsung</div>
-      </div>
+  <div class="f-top f-right tools">
+    <select class="float-ctl floor-sel" id="floorSel" aria-label="Pilih lantai"></select>
+    <button class="float-ctl loc-btn" id="locBtn" aria-expanded="false" aria-controls="scenePanel">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+      Lokasi
+    </button>
+    <aside class="float scene-panel" id="scenePanel" hidden>
+      <div class="sp-head">Daftar Lokasi</div>
       <div class="sp-list" id="spList"></div>
     </aside>
-
-    <button class="panel-collapse-btn" id="panelCollapseBtn" title="Toggle panel">
-      <svg class="panel-collapse-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
-    </button>
-
-    <main class="view-area">
-      <!-- skeleton shimmer for scene-to-scene navigation -->
-      <div class="skeleton-overlay done" id="viewLoading"></div>
-      <img class="view-img" id="viewImg" alt="Scene"/>
-      <div class="view-vignette"></div>
-
-      <div class="hud" id="hud">
-        <div class="hud-dot"></div>
-        <span class="hud-name" id="hudName">—</span>
-        <span class="hud-id" id="hudId"></span>
-      </div>
-
-      <div class="kbd-hint">
-        <div class="k">W</div><div class="k">A</div><div class="k">S</div><div class="k">D</div>
-        <span class="k-sep">navigate</span>
-      </div>
-
-      <button class="arrow up hidden" id="aUp"><div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div><div class="arrow-label" id="lUp">Atas</div></button>
-      <button class="arrow down hidden" id="aDown"><div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div><div class="arrow-label" id="lDown">Bawah</div></button>
-      <button class="arrow left hidden" id="aLeft"><div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></div><div class="arrow-label" id="lLeft">Kiri</div></button>
-      <button class="arrow right hidden" id="aRight"><div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M5 12h14M12 19l7-7-7-7"/></svg></div><div class="arrow-label" id="lRight">Kanan</div></button>
-    </main>
   </div>
 
   <script type="module" src="./scripts/indoor.js"></script>

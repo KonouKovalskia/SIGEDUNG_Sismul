@@ -2,41 +2,39 @@
 <html lang="id">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
   <title>Entrance — TU Navigator</title>
 
   <link rel="stylesheet" href="./styles/tokens.css"/>
   <link rel="stylesheet" href="./styles/components.css"/>
   <link rel="stylesheet" href="./styles/entrance.css"/>
+
+  <!-- FIX 7: Preload campus.json (same hint as index.html — browser deduplicates
+       if already cached, so no wasted request) -->
   <link rel="preload" href="./data/campus.json" as="fetch" crossorigin/>
 </head>
 <body>
-  <header class="topbar">
-    <a class="tb-btn" href="./index.html">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back
-    </a>
-    <div class="tb-sep"></div>
-    <div class="tb-crumb">
-      <span class="tb-crumb-tag">Entrance</span>
-      <span class="tb-crumb-name" id="bldName">—</span>
-    </div>
-  </header>
-
-  <div class="scene" id="sceneContainer">
-    <!-- skeleton shimmer shown until entrance image loads -->
+  <main class="full-bleed" id="sceneContainer">
     <div class="skeleton-overlay" id="loading"></div>
-    <img class="scene-img" id="sceneImg" alt="Entrance view"/>
-    <div class="scene-vignette"></div>
+    <img class="bleed-img" id="sceneImg" alt="Pintu masuk gedung"/>
+    <div class="vignette"></div>
     <div class="scene-grad"></div>
 
-    <button class="arrow up hidden" id="aUp" aria-label="Enter building">
+    <button class="arrow up hidden" id="aUp" aria-label="Masuk gedung">
       <div class="arrow-ring"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
       <div class="arrow-label">Masuk</div>
     </button>
-  </div>
+  </main>
 
-  <div class="actions">
+  <header class="float f-top f-left crumb">
+    <a class="icon-btn" href="./index.html" aria-label="Kembali ke peta"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg></a>
+    <div class="crumb-text">
+      <span class="crumb-tag">Entrance</span>
+      <span class="crumb-name" id="bldName">—</span>
+    </div>
+  </header>
+
+  <div class="float f-bottom actions">
     <button class="act-btn" id="btnDir">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
       Google Maps
